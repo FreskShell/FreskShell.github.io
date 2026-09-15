@@ -162,6 +162,13 @@ if (window.matchMedia('(hover: none)').matches) {
     if (evento.target.closest('a')) return;
     card.classList.toggle('aberta');
   }));
+
+  /* Toque fora de qualquer card fecha todos os cards abertos */
+  document.addEventListener('click', (evento) => {
+    if (!evento.target.closest('.card')) {
+      cards.forEach(c => c.classList.remove('aberta'));
+    }
+  });
 }
 
 atualizarRodape();

@@ -26,7 +26,7 @@ body {
 .slogan { color: var(--texto-suave); margin-top: 6px; }
 
 /* ===== Container e controles ===== */
-.container { max-width: 1080px; margin: 0 auto; padding: 0 20px 80px; }
+.container { max-width: 1240px; margin: 0 auto; padding: 0 20px 80px; }
 
 .controles {
   display: flex; flex-wrap: wrap; gap: 14px; align-items: center;
@@ -125,11 +125,30 @@ body {
   padding: 0 18px;
   transition: max-height .45s ease;
 }
-.card:hover .specs,
-.card.aberta .specs,
-.card:focus-within .specs {
-  max-height: 210px;
-  overflow-y: auto; /* lista rolável */
+/* Dispositivos com mouse: expande no hover ou no foco de teclado */
+@media (hover: hover) {
+  .card:hover .specs,
+  .card:focus-within .specs {
+    max-height: 210px;
+    overflow-y: auto;
+  }
+}
+
+/* Telas de toque: expande APENAS pela classe .aberta (o toque) */
+@media (hover: none) {
+  .card.aberta .specs {
+    max-height: 210px;
+    overflow-y: auto;
+  }
+}
+
+/* Remove o contorno azul feio do toque,
+   mas mantém contorno para quem navega com a tecla Tab */
+.specs:focus { outline: none; }
+.specs:focus-visible {
+  outline: 2px solid var(--acento);
+  outline-offset: -2px;
+  border-radius: 8px;
 }
 .specs ul { list-style: none; display: grid; gap: 8px; padding: 10px 0 14px; }
 .specs li {
