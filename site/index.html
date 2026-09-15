@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Catálogo de baterias automotivas com atendimento direto pelo WhatsApp.">
+  <title>Volt Baterias | Catálogo</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>⚡</text></svg>">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <header class="topo">
+    <h1 class="logo">⚡ Volt<span>Baterias</span></h1>
+    <p class="slogan">Energia confiável para o seu veículo</p>
+  </header>
+
+  <main class="container">
+
+    <!-- Barra de busca + filtros -->
+    <section class="controles">
+      <input type="search" id="busca" placeholder="Buscar por nome, amperagem, aplicação..." aria-label="Buscar produto">
+      <button class="botao-filtros" id="botao-filtros" aria-expanded="false">
+        Filtros <span class="badge" id="qtd-filtros" hidden>0</span> ▾
+      </button>
+    </section>
+
+    <div class="painel-filtros" id="painel-filtros">
+      <div class="painel-corte">
+        <div class="painel-conteudo">
+
+          <fieldset class="grupo-filtro">
+            <legend>Categoria</legend>
+            <div class="chips">
+              <button class="chip" data-grupo="categoria" data-valor="sedan">Sedã</button>
+              <button class="chip" data-grupo="categoria" data-valor="suv">SUV e picapes</button>
+              <button class="chip" data-grupo="categoria" data-valor="compacto">Compactos</button>
+            </div>
+          </fieldset>
+
+          <fieldset class="grupo-filtro">
+            <legend>Amperagem</legend>
+            <div class="chips">
+              <button class="chip" data-grupo="amperagem" data-valor="45">45Ah</button>
+              <button class="chip" data-grupo="amperagem" data-valor="60">60Ah</button>
+              <button class="chip" data-grupo="amperagem" data-valor="75">75Ah</button>
+            </div>
+          </fieldset>
+
+          <fieldset class="grupo-filtro">
+            <legend>Etiquetas</legend>
+            <div class="chips">
+              <button class="chip" data-grupo="tag" data-valor="promocao">Promoção</button>
+              <button class="chip" data-grupo="tag" data-valor="mais-vendida">Mais vendida</button>
+              <button class="chip" data-grupo="tag" data-valor="diesel">Diesel</button>
+            </div>
+          </fieldset>
+
+          <button class="limpar" id="limpar-filtros">Limpar filtros</button>
+        </div>
+      </div>
+    </div>
+    <p class="contador" id="contador"></p>
+
+    <!-- Grade de produtos -->
+    <section class="grade" id="grade">
+
+      <article class="card" data-categoria="sedan" data-amperagem="60Ah" style="--i:0">
+        <figure class="media">
+          <img src="img/bosch.jpg" alt="Bateria 60Ah Modelo X" loading="lazy" onerror="this.remove()">
+        </figure>
+        <div class="info">
+          <h2>Bateria 60Ah <span>Modelo X</span></h2>
+          <p class="preco">R$ 350,00</p>
+          <p class="hint">Passe o mouse para ver as especificações</p>
+        </div>
+        <div class="specs" tabindex="0">
+          <ul>
+            <li><strong>Amperagem</strong> 60Ah</li>
+            <li><strong>Tensão</strong> 12V</li>
+            <li><strong>CCA (partida a frio)</strong> 500A</li>
+            <li><strong>Dimensões</strong> 242 × 175 × 190 mm</li>
+            <li><strong>Peso</strong> 14,5 kg</li>
+            <li><strong>Tipo</strong> Selada (livre de manutenção)</li>
+            <li><strong>Garantia</strong> 12 meses</li>
+            <li><strong>Aplicação</strong> Sedãs e carros médios</li>
+          </ul>
+        </div>
+        <a class="zap" target="_blank" rel="noopener"
+           href="https://wa.me/5511999999999?text=Ol%C3%A1!%20Vi%20a%20Bateria%2060Ah%20Modelo%20X%20no%20site%20e%20quero%20mais%20informa%C3%A7%C3%B5es.">
+          Pedir no WhatsApp
+        </a>
+      </article>
+
+      <article class="card" data-categoria="suv" data-amperagem="75Ah" style="--i:1">
+        <figure class="media">
+          <img src="img/jupiter.webp" alt="Bateria 75Ah Modelo Pro" loading="lazy" onerror="this.remove()">
+        </figure>
+        <div class="info">
+          <h2>Bateria 75Ah <span>Modelo Pro</span></h2>
+          <p class="preco">R$ 480,00</p>
+          <p class="hint">Passe o mouse para ver as especificações</p>
+        </div>
+        <div class="specs" tabindex="0">
+          <ul>
+            <li><strong>Amperagem</strong> 75Ah</li>
+            <li><strong>Tensão</strong> 12V</li>
+            <li><strong>CCA (partida a frio)</strong> 630A</li>
+            <li><strong>Dimensões</strong> 278 × 175 × 190 mm</li>
+            <li><strong>Peso</strong> 17,8 kg</li>
+            <li><strong>Tipo</strong> Selada (livre de manutenção)</li>
+            <li><strong>Garantia</strong> 18 meses</li>
+            <li><strong>Aplicação</strong> SUVs, picapes e diesel</li>
+          </ul>
+        </div>
+        <a class="zap" target="_blank" rel="noopener"
+           href="https://wa.me/5511999999999?text=Ol%C3%A1!%20Vi%20a%20Bateria%2075Ah%20Modelo%20Pro%20no%20site%20e%20quero%20mais%20informa%C3%A7%C3%B5es.">
+          Pedir no WhatsApp
+        </a>
+      </article>
+
+      <article class="card" data-categoria="compacto" data-amperagem="45Ah" style="--i:2">
+        <figure class="media">
+          <img src="img/moura.webp" alt="Bateria 45Ah Modelo Compact" loading="lazy" onerror="this.remove()">
+        </figure>
+        <div class="info">
+          <h2>Bateria 45Ah <span>Modelo Compact</span></h2>
+          <p class="preco">R$ 290,00</p>
+          <p class="hint">Passe o mouse para ver as especificações</p>
+        </div>
+        <div class="specs" tabindex="0">
+          <ul>
+            <li><strong>Amperagem</strong> 45Ah</li>
+            <li><strong>Tensão</strong> 12V</li>
+            <li><strong>CCA (partida a frio)</strong> 330A</li>
+            <li><strong>Dimensões</strong> 207 × 175 × 175 mm</li>
+            <li><strong>Peso</strong> 11,2 kg</li>
+            <li><strong>Tipo</strong> Selada (livre de manutenção)</li>
+            <li><strong>Garantia</strong> 12 meses</li>
+            <li><strong>Aplicação</strong> Compactos e populares</li>
+          </ul>
+        </div>
+        <a class="zap" target="_blank" rel="noopener"
+           href="https://wa.me/5511999999999?text=Ol%C3%A1!%20Vi%20a%20Bateria%2045Ah%20Modelo%20Compact%20no%20site%20e%20quero%20mais%20informa%C3%A7%C3%B5es.">
+          Pedir no WhatsApp
+        </a>
+      </article>
+
+    </section>
+
+    <p class="vazio" id="vazio" hidden>Nenhuma bateria encontrada. Tente outro termo ou remova os filtros.</p>
+  </main>
+
+  <footer class="rodape">
+    <p>© 2026 Volt Baterias — catálogo demonstrativo</p>
+  </footer>
+
+  <script src="script.js"></script>
+</body>
+</html>

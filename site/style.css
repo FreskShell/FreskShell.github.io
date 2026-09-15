@@ -1,0 +1,243 @@
+/* ===== Variáveis: cores centrais do projeto ===== */
+:root {
+  --fundo: #0e1116;
+  --cartao: #161b24;
+  --borda: #232b38;
+  --texto: #e8ecf1;
+  --texto-suave: #9aa4b2;
+  --acento: #22c55e;
+  --zap: #25d366;
+  --raio: 14px;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+  font-family: 'Segoe UI', system-ui, sans-serif;
+  background: radial-gradient(1100px 500px at 85% -10%, rgba(34,197,94,.10), transparent), var(--fundo);
+  color: var(--texto);
+  min-height: 100vh;
+}
+
+/* ===== Cabeçalho ===== */
+.topo { text-align: center; padding: 56px 20px 20px; animation: descer .7s ease backwards; }
+.logo { font-size: 2.4rem; letter-spacing: -1px; }
+.logo span { color: var(--acento); }
+.slogan { color: var(--texto-suave); margin-top: 6px; }
+
+/* ===== Container e controles ===== */
+.container { max-width: 1080px; margin: 0 auto; padding: 0 20px 80px; }
+
+.controles {
+  display: flex; flex-wrap: wrap; gap: 14px; align-items: center;
+  margin-top: 28px; animation: descer .7s .1s ease backwards;
+}
+
+#busca {
+  flex: 1 1 260px;
+  background: var(--cartao);
+  border: 1px solid var(--borda);
+  color: var(--texto);
+  padding: 12px 18px;
+  border-radius: 999px;
+  font-size: 1rem;
+  transition: border-color .25s, box-shadow .25s;
+}
+#busca:focus {
+  outline: none;
+  border-color: var(--acento);
+  box-shadow: 0 0 0 3px rgba(34,197,94,.18);
+}
+
+.chip {
+  background: transparent;
+  border: 1px solid var(--borda);
+  color: var(--texto-suave);
+  padding: 9px 16px;
+  border-radius: 999px;
+  cursor: pointer;
+  font-size: .9rem;
+  transition: border-color .25s, color .25s, transform .25s, background .25s;
+}
+.chip:hover { border-color: var(--acento); color: var(--texto); transform: translateY(-1px); }
+.chip.ativo { background: var(--acento); border-color: var(--acento); color: #06130a; font-weight: 600; }
+
+.contador { color: var(--texto-suave); font-size: .85rem; margin: 12px 2px 18px; }
+
+/* ===== Grade de produtos ===== */
+.grade {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(270px, 1fr));
+  gap: 22px;
+  align-items: start; /* cada card cresce sozinho ao expandir */
+}
+
+/* ===== Card ===== */
+.card {
+  background: var(--cartao);
+  border: 1px solid var(--borda);
+  border-radius: var(--raio);
+  overflow: hidden;
+  cursor: pointer;
+  transition: transform .3s ease, border-color .3s ease, box-shadow .3s ease;
+  animation: surgir .55s ease backwards;
+  animation-delay: calc(var(--i) * .12s); /* entrada escalonada */
+}
+.card:hover, .card.aberta {
+  transform: translateY(-6px);
+  border-color: rgba(34,197,94,.55);
+  box-shadow: 0 14px 34px rgba(0,0,0,.45), 0 0 0 1px rgba(34,197,94,.25);
+}
+.card.oculto { display: none; }
+
+/* Imagem com fallback caso o arquivo não exista */
+.media {
+  position: relative;
+  aspect-ratio: 4 / 3;
+  background: linear-gradient(135deg, #1b2230, #10141c);
+  display: grid; place-items: center;
+  overflow: hidden;
+}
+.media::before {
+  content: 'Foto do produto';
+  color: var(--texto-suave);
+  font-size: .8rem; letter-spacing: 1px; text-transform: uppercase;
+}
+.media img {
+  position: absolute; inset: 0;
+  width: 100%; height: 100%;
+  object-fit: cover;
+  transition: transform .45s ease;
+}
+.card:hover .media img { transform: scale(1.07); }
+
+/* ===== Informações ===== */
+.info { padding: 18px 18px 6px; }
+.info h2 { font-size: 1.15rem; }
+.info h2 span { color: var(--acento); }
+.preco { font-size: 1.35rem; font-weight: 700; margin-top: 6px; }
+.hint { color: var(--texto-suave); font-size: .8rem; margin-top: 6px; }
+
+/* ===== Especificações: escondidas, expandem no hover ===== */
+.specs {
+  max-height: 0;
+  overflow: hidden;
+  padding: 0 18px;
+  transition: max-height .45s ease;
+}
+.card:hover .specs,
+.card.aberta .specs,
+.card:focus-within .specs {
+  max-height: 210px;
+  overflow-y: auto; /* lista rolável */
+}
+.specs ul { list-style: none; display: grid; gap: 8px; padding: 10px 0 14px; }
+.specs li {
+  display: flex; justify-content: space-between; gap: 12px;
+  font-size: .88rem;
+  border-bottom: 1px dashed var(--borda);
+  padding-bottom: 8px;
+}
+.specs li strong { color: var(--texto-suave); font-weight: 500; }
+.specs::-webkit-scrollbar { width: 8px; }
+.specs::-webkit-scrollbar-thumb { background: var(--borda); border-radius: 8px; }
+
+/* ===== Botão WhatsApp ===== */
+.zap {
+  display: flex; justify-content: center; align-items: center;
+  margin: 6px 18px 18px; padding: 12px;
+  border-radius: 10px;
+  background: var(--zap);
+  color: #06130a;
+  font-weight: 700;
+  text-decoration: none;
+  transition: transform .2s ease, filter .2s ease;
+}
+.zap:hover { transform: translateY(-2px); filter: brightness(1.08); }
+.zap:active { transform: translateY(0); }
+
+/* ===== Estado vazio e rodapé ===== */
+.vazio { text-align: center; color: var(--texto-suave); padding: 60px 0; font-size: 1.05rem; }
+.rodape { text-align: center; color: var(--texto-suave); font-size: .85rem; padding: 24px 0 32px; }
+
+/* ===== Botão que abre os filtros ===== */
+.botao-filtros {
+  display: flex; align-items: center; gap: 8px;
+  background: var(--cartao);
+  border: 1px solid var(--borda);
+  color: var(--texto);
+  padding: 11px 18px;
+  border-radius: 999px;
+  cursor: pointer;
+  font-size: .95rem;
+  transition: border-color .25s;
+}
+.botao-filtros:hover { border-color: var(--acento); }
+
+.badge {
+  background: var(--acento);
+  color: #06130a;
+  font-size: .75rem;
+  font-weight: 700;
+  min-width: 20px; height: 20px;
+  padding: 0 5px;
+  border-radius: 999px;
+  display: grid; place-items: center;
+}
+
+/* ===== Painel expansível =====
+   height: auto não pode ser animado.
+   Truque: grid-template-rows 0fr -> 1fr é interpolável. */
+.painel-filtros {
+  display: grid;
+  grid-template-rows: 0fr;               /* fechado: linha de altura zero */
+  transition: grid-template-rows .35s ease;
+}
+.painel-filtros.aberto { grid-template-rows: 1fr; } /* aberto: altura do conteúdo */
+.painel-corte { overflow: hidden; }      /* esconde o conteúdo enquanto cresce */
+
+.painel-conteudo {
+  margin-top: 14px;
+  background: var(--cartao);
+  border: 1px solid var(--borda);
+  border-radius: var(--raio);
+  padding: 18px;
+  display: grid;
+  gap: 16px;
+}
+
+.grupo-filtro { border: none; display: grid; gap: 8px; }
+.grupo-filtro legend {
+  color: var(--texto-suave);
+  font-size: .78rem;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  padding-bottom: 6px;
+}
+.chips { display: flex; flex-wrap: wrap; gap: 8px; }
+
+.limpar {
+  justify-self: start;
+  background: none; border: none;
+  color: var(--texto-suave);
+  font-size: .85rem;
+  text-decoration: underline;
+  cursor: pointer;
+  transition: color .2s;
+}
+.limpar:hover { color: var(--texto); }
+
+/* ===== Animações ===== */
+@keyframes surgir {
+  from { opacity: 0; transform: translateY(26px) scale(.98); }
+  to   { opacity: 1; transform: none; }
+}
+@keyframes descer {
+  from { opacity: 0; transform: translateY(-16px); }
+  to   { opacity: 1; transform: none; }
+}
+
+/* Acessibilidade: respeita quem desativa animações no sistema */
+@media (prefers-reduced-motion: reduce) {
+  * { animation: none !important; transition: none !important; }
+}
