@@ -25,15 +25,17 @@ body {
 .logo span { color: var(--acento); }
 .slogan { color: var(--texto-suave); margin-top: 6px; }
 
-/* Remove o destaque azul/cinza que aparece ao tocar (mobile) */
-* {
-    -webkit-tap-highlight-color: transparent;
+*, *::before, *::after {
+  -webkit-tap-highlight-color: transparent;
 }
 
-/* Esconde o contorno de foco quando vem de mouse/toque,
-   mas mantém para quem navega com a tecla Tab (teclado) */
-:focus:not(:focus-visible) {
-  outline: none;
+/* garantia extra nos elementos que recebem o toque */
+.card,
+.media,
+.media img,
+.zap,
+.chip {
+  -webkit-tap-highlight-color: transparent;
 }
 
 /* ===== Container e controles ===== */
