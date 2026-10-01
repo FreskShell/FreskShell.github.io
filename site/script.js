@@ -1,5 +1,4 @@
-/* ===== Montagem dos cards a partir dos dados (produtos.js) ===== */
-
+/* ===== Montagem dos cards a partir dos dados (products.js) ===== */
 function linkWhatsapp(produto) {
   const nomeCompleto = `${produto.nome} ${produto.modelo}`;
   const mensagem = `Olá! Vi a ${nomeCompleto} no site e quero mais informações.`;
@@ -7,41 +6,51 @@ function linkWhatsapp(produto) {
 }
 
 function criarCard(produto, indice) {
+  // Normaliza na fronteira: espaços invisíveis nos dados não quebram nada
+  const nome      = produto.nome.trim();
+  const modelo    = produto.modelo.trim();
+  const preco     = produto.preco.trim();
+  const imagem    = produto.imagem.trim();
+  const categoria = produto.categoria.trim();
+  const amperagem = produto.amperagem.trim();
+  const tags      = produto.tags.map(t => t.trim());
+
   const card = document.createElement('article');
   card.className = 'card';
-  card.dataset.categoria = produto.categoria.trim();
-  card.dataset.amperagem = produto.amperagem.trim();
-  card.dataset.tags = produto.tags.join(' ');
-  card.style.setProperty('--i', indice); // controla o atraso da entrada escalonada
+  card.dataset.categoria = categoria;
+  card.dataset.amperagem = amperagem;
+  card.dataset.tags = tags.join(' ');
+  card.style.setProperty('--i', indice);
 
   const specs = produto.especificacoes
-    .map(([rotulo, valor]) => `<li><strong>${rotulo}</strong> ${valor}</li>`)
+    .map(([rotulo, valor]) => `<li><strong>${rotulo.trim()}</strong> ${valor.trim()}</li>`)
     .join('');
 
   card.innerHTML = `
     <figure class="media">
-      <img src="${produto.imagem}" alt="${produto.nome} ${produto.modelo}" loading="lazy" onerror="this.onerror=null; this.src='img/noBatteryFound.png'">
+      <img src="${imagem}" alt="${nome} ${modelo}" loading="lazy"
+           onerror="this.onerror=null; this.src='img/noBatteryFound.png'">
     </figure>
     <div class="info">
-      <h2>${produto.nome} <span>${produto.modelo}</span></h2>
-      <p class="preco">${produto.preco}</p>
+      <h2>${nome} <span>${modelo}</span></h2>
+      <p class="preco">${preco}</p>
     </div>
     <div class="specs" tabindex="0">
       <ul>${specs}</ul>
     </div>
-    <a class="zap" target="_blank" rel="noopener" href="${linkWhatsapp(produto)}">
+    <a class="zap" target="_blank" rel="noopener" href="${linkWhatsapp({ nome, modelo })}">
       Pedir no WhatsApp
     </a>
   `;
   return card;
 }
 
+/* ===== Grade e colunas independentes (masonry) ===== */
 const grade = document.getElementById('grade');
 const cards = PRODUTOS
   .filter(produto => produto.disponivel)
   .map((produto, indice) => criarCard(produto, indice));
 
-/* ===== Colunas independentes (masonry) ===== */
 const GAP = 22;
 const LARGURA_MIN = 270;
 let colunasAtuais = 0;
@@ -65,8 +74,7 @@ function construirColunas(qtd) {
   }
 }
 
-/* Reempacota SOMENTE os cards visíveis, em ordem de leitura.
-   É isto que faz os de baixo subirem para o lugar dos que somem. */
+/* Reempacota SOMENTE os visíveis, em ordem de leitura. */
 function empacotar() {
   const qtd = qtdColunas();
   if (qtd !== colunasAtuais) construirColunas(qtd);
@@ -89,7 +97,6 @@ window.addEventListener('resize', () => {
 const busca    = document.getElementById('busca');
 const contador = document.getElementById('contador');
 const vazio    = document.getElementById('vazio');
-
 const painel       = document.getElementById('painel-filtros');
 const botaoFiltros = document.getElementById('botao-filtros');
 const badge        = document.getElementById('qtd-filtros');
@@ -132,7 +139,7 @@ function atualizarBadge() {
   badge.textContent = total;
 }
 
-/* ===== Filtragem animada com a técnica FLIP ===== */
+/* ===== Filtragem animada (FLIP) ===== */
 function aplicar() {
   const vaoSair = [], vaoEntrar = [], ficam = [];
 
@@ -151,7 +158,7 @@ function aplicar() {
     vaoSair.forEach(c => c.classList.add('oculto'));
     vaoEntrar.forEach(c => c.classList.remove('oculto'));
 
-      empacotar(); // reflow em lista: os de baixo sobem para o lugar dos que saíram
+    empacotar(); // reflow em lista: vale para filtros E para pesquisa
 
     const depois = new Map();
     [...vaoEntrar, ...ficam].forEach(c => depois.set(c, c.getBoundingClientRect()));
@@ -228,18 +235,14 @@ limpar.addEventListener('click', () => {
   aplicar();
 });
 
+/* Um toque/clique no card abre; um segundo toque/clique fecha.
+   Cada card é independente: vários podem ficar abertos ao mesmo tempo. */
 cards.forEach(card => {
   const specs = card.querySelector('.specs');
-
   card.addEventListener('click', (evento) => {
-    if (evento.target.closest('a')) return;
-
+    if (evento.target.closest('a')) return; // o link do WhatsApp não alterna
     card.classList.toggle('aberta');
-
-    // Em mobile, tocar numa área com tabindex ativa :focus-visible
-    // e mantém o painel aberto mesmo após remover .aberta.
-    // Soltar o foco sempre garante o recolhimento em qualquer aparelho.
-    specs.blur();
+    if (specs.contains(document.activeElement)) specs.blur();
   });
 });
 

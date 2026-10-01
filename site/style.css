@@ -164,16 +164,18 @@ body {
   }
 }
 
-/* Foco via TECLADO (Tab): expande e mostra o contorno.
-   Foco por clique NÃO expande — por isso :focus-visible, não :focus-within. */
-.specs:focus { outline: none; }
-.specs:focus-visible {
-  outline: 2px solid var(--acento);
-  outline-offset: -2px;
-  border-radius: 8px;
-  max-height: 210px;
-  overflow-y: auto;
-}
+   .specs:focus { outline: none; }
+   /* Expansão e contorno por teclado só em mouse preciso.
+      Em toque, o estado aberto vem APENAS de .aberta. */
+   @media (hover: hover) and (pointer: fine) {
+     .specs:focus-visible {
+       outline: 2px solid var(--acento);
+       outline-offset: -2px;
+       border-radius: 8px;
+       max-height: 210px;
+       overflow-y: auto;
+     }
+   }
 
 .specs ul { list-style: none; display: grid; gap: 8px; padding: 10px 0 14px; }
 .specs li {
