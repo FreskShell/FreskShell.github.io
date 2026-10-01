@@ -1,5 +1,91 @@
+/* ===== Montagem dos cards a partir dos dados (produtos.js) ===== */
+
+function linkWhatsapp(produto) {
+  const nomeCompleto = `${produto.nome} ${produto.modelo}`;
+  const mensagem = `Olá! Vi a ${nomeCompleto} no site e quero mais informações.`;
+  return `https://wa.me/${LOJA.whatsapp}?text=${encodeURIComponent(mensagem)}`;
+}
+
+function criarCard(produto, indice) {
+  const card = document.createElement('article');
+  card.className = 'card';
+  card.dataset.categoria = produto.categoria.trim();
+  card.dataset.amperagem = produto.amperagem.trim();
+  card.dataset.tags = produto.tags.join(' ');
+  card.style.setProperty('--i', indice); // controla o atraso da entrada escalonada
+
+  const specs = produto.especificacoes
+    .map(([rotulo, valor]) => `<li><strong>${rotulo}</strong> ${valor}</li>`)
+    .join('');
+
+  card.innerHTML = `
+    <figure class="media">
+      <img src="${produto.imagem}" alt="${produto.nome} ${produto.modelo}" loading="lazy" onerror="this.onerror=null; this.src='img/noBatteryFound.png'">
+    </figure>
+    <div class="info">
+      <h2>${produto.nome} <span>${produto.modelo}</span></h2>
+      <p class="preco">${produto.preco}</p>
+    </div>
+    <div class="specs" tabindex="0">
+      <ul>${specs}</ul>
+    </div>
+    <a class="zap" target="_blank" rel="noopener" href="${linkWhatsapp(produto)}">
+      Pedir no WhatsApp
+    </a>
+  `;
+  return card;
+}
+
+const grade = document.getElementById('grade');
+const cards = PRODUTOS
+  .filter(produto => produto.disponivel)
+  .map((produto, indice) => criarCard(produto, indice));
+
+/* ===== Colunas independentes (masonry) ===== */
+const GAP = 22;
+const LARGURA_MIN = 270;
+let colunasAtuais = 0;
+let primeiraDistribuicao = true;
+let colunas = [];
+
+function qtdColunas() {
+  const largura = grade.clientWidth;
+  return Math.max(1, Math.floor((largura + GAP) / (LARGURA_MIN + GAP)));
+}
+
+function construirColunas(qtd) {
+  colunasAtuais = qtd;
+  grade.textContent = '';
+  colunas = [];
+  for (let i = 0; i < qtd; i++) {
+    const coluna = document.createElement('div');
+    coluna.className = 'coluna';
+    grade.appendChild(coluna);
+    colunas.push(coluna);
+  }
+}
+
+/* Reempacota SOMENTE os cards visíveis, em ordem de leitura.
+   É isto que faz os de baixo subirem para o lugar dos que somem. */
+function empacotar() {
+  const qtd = qtdColunas();
+  if (qtd !== colunasAtuais) construirColunas(qtd);
+  if (!primeiraDistribuicao) grade.classList.add('sem-entrada');
+  primeiraDistribuicao = false;
+
+  const visiveis = cards.filter(c => !c.classList.contains('oculto'));
+  visiveis.forEach((card, i) => colunas[i % qtd].appendChild(card));
+}
+
+empacotar();
+
+let tempoResize;
+window.addEventListener('resize', () => {
+  clearTimeout(tempoResize);
+  tempoResize = setTimeout(empacotar, 150);
+});
+
 /* ===== Elementos ===== */
-const cards    = [...document.querySelectorAll('.card')];
 const busca    = document.getElementById('busca');
 const contador = document.getElementById('contador');
 const vazio    = document.getElementById('vazio');
@@ -11,8 +97,6 @@ const chips        = [...document.querySelectorAll('.chip')];
 const limpar       = document.getElementById('limpar-filtros');
 
 /* ===== Estado ===== */
-/* Cada grupo guarda os valores selecionados.
-   Dentro do mesmo grupo vale OU; entre grupos vale E. */
 const ativos = { categoria: new Set(), amperagem: new Set(), tag: new Set() };
 let termoAtual = '';
 
@@ -48,12 +132,7 @@ function atualizarBadge() {
   badge.textContent = total;
 }
 
-/* ===== Filtragem animada com a técnica FLIP =====
-   F  First  : mede onde cada card está
-   (aplica a mudança de layout — os cards "teleportam")
-   L  Last   : mede onde cada card ficou
-   I  Invert : aplica transform para parecer que ainda está no lugar antigo
-   P  Play   : anima o transform até zero — o card desliza */
+/* ===== Filtragem animada com a técnica FLIP ===== */
 function aplicar() {
   const vaoSair = [], vaoEntrar = [], ficam = [];
 
@@ -65,7 +144,6 @@ function aplicar() {
     else if (visivel && passa) ficam.push(card);
   });
 
-  /* F: posição de tudo que está visível agora */
   const antes = new Map();
   [...vaoSair, ...ficam].forEach(c => antes.set(c, c.getBoundingClientRect()));
 
@@ -73,11 +151,11 @@ function aplicar() {
     vaoSair.forEach(c => c.classList.add('oculto'));
     vaoEntrar.forEach(c => c.classList.remove('oculto'));
 
-    /* L: novas posições (getBoundingClientRect força o navegador a calcular o layout) */
+      empacotar(); // reflow em lista: os de baixo sobem para o lugar dos que saíram
+
     const depois = new Map();
     [...vaoEntrar, ...ficam].forEach(c => depois.set(c, c.getBoundingClientRect()));
 
-    /* I + P: cards que permanecem deslizam do lugar antigo para o novo */
     ficam.forEach(card => {
       const a = antes.get(card), d = depois.get(card);
       const dx = a.left - d.left, dy = a.top - d.top;
@@ -89,9 +167,8 @@ function aplicar() {
       }
     });
 
-    /* Cards que entram: surgem com fade + leve subida */
     vaoEntrar.forEach(card => {
-      card.getAnimations().forEach(a => a.cancel()); // limpa resquícios da animação de saída
+      card.getAnimations().forEach(a => a.cancel());
       card.animate(
         [{ opacity: 0, transform: 'translateY(14px) scale(0.94)' }, { opacity: 1, transform: 'none' }],
         { duration: 280, easing: 'ease-out' }
@@ -102,8 +179,6 @@ function aplicar() {
   };
 
   if (vaoSair.length) {
-    /* display: none não anima. Por isso o card que sai
-       esmaece primeiro e só é escondido no final. */
     let faltam = vaoSair.length;
     vaoSair.forEach(card => {
       card.getAnimations().forEach(a => a.cancel());
@@ -119,9 +194,6 @@ function aplicar() {
 }
 
 /* ===== Eventos ===== */
-
-/* Debounce: espera o usuário parar de digitar (250ms)
-   para não disparar dezenas de animações sobrepostas */
 let tempoBusca;
 busca.addEventListener('input', () => {
   clearTimeout(tempoBusca);
@@ -156,19 +228,19 @@ limpar.addEventListener('click', () => {
   aplicar();
 });
 
-/* Celular não tem hover: o toque expande o card */
-if (window.matchMedia('(hover: none)').matches) {
-  cards.forEach(card => card.addEventListener('click', (evento) => {
-    if (evento.target.closest('a')) return;
-    card.classList.toggle('aberta');
-  }));
+cards.forEach(card => {
+  const specs = card.querySelector('.specs');
 
-  /* Toque fora de qualquer card fecha todos os cards abertos */
-  document.addEventListener('click', (evento) => {
-    if (!evento.target.closest('.card')) {
-      cards.forEach(c => c.classList.remove('aberta'));
-    }
+  card.addEventListener('click', (evento) => {
+    if (evento.target.closest('a')) return;
+
+    card.classList.toggle('aberta');
+
+    // Em mobile, tocar numa área com tabindex ativa :focus-visible
+    // e mantém o painel aberto mesmo após remover .aberta.
+    // Soltar o foco sempre garante o recolhimento em qualquer aparelho.
+    specs.blur();
   });
-}
+});
 
 atualizarRodape();

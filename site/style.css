@@ -77,13 +77,21 @@ body {
 
 .contador { color: var(--texto-suave); font-size: .85rem; margin: 12px 2px 18px; }
 
-/* ===== Grade de produtos ===== */
+/* ===== Grade de produtos: colunas independentes ===== */
 .grade {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(270px, 1fr));
+  display: flex;
   gap: 22px;
-  align-items: start; /* cada card cresce sozinho ao expandir */
+  align-items: flex-start; /* cada coluna tem a altura do próprio conteúdo */
 }
+.coluna {
+  flex: 1 1 0;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 22px;
+}
+/* Após a primeira entrada, não repete a animação ao reorganizar colunas */
+.grade.sem-entrada .card { animation: none; }
 
 /* ===== Card ===== */
 .card {
@@ -111,11 +119,7 @@ body {
   display: grid; place-items: center;
   overflow: hidden;
 }
-.media::before {
-  content: 'Foto do produto';
-  color: var(--texto-suave);
-  font-size: .8rem; letter-spacing: 1px; text-transform: uppercase;
-}
+
 .media img {
   position: absolute; inset: 0;
   width: 100%; height: 100%;
@@ -129,40 +133,48 @@ body {
 .info h2 { font-size: 1.15rem; }
 .info h2 span { color: var(--acento); }
 .preco { font-size: 1.35rem; font-weight: 700; margin-top: 6px; }
-.hint { color: var(--texto-suave); font-size: .8rem; margin-top: 6px; }
 
-/* ===== Especificações: escondidas, expandem no hover ===== */
+/* ===== Especificações ===== */
 .specs {
   max-height: 0;
   overflow: hidden;
   padding: 0 18px;
   transition: max-height .45s ease;
 }
-/* Dispositivos com mouse: expande no hover ou no foco de teclado */
+/* Fixado por clique: vale em qualquer dispositivo */
+.card.aberta .specs {
+  max-height: 210px;
+  overflow-y: auto;
+}
+/* Prévia por hover, apenas em dispositivos com mouse */
 @media (hover: hover) {
-  .card:hover .specs,
-  .card:focus-within .specs {
+  .card:hover .specs {
     max-height: 210px;
     overflow-y: auto;
   }
 }
 
-/* Telas de toque: expande APENAS pela classe .aberta (o toque) */
-@media (hover: none) {
-  .card.aberta .specs {
+@media (hover: hover) and (pointer: fine) {
+  .specs:focus-visible {
+    outline: 2px solid var(--acento);
+    outline-offset: -2px;
+    border-radius: 8px;
     max-height: 210px;
     overflow-y: auto;
   }
 }
 
-/* Remove o contorno azul feio do toque,
-   mas mantém contorno para quem navega com a tecla Tab */
+/* Foco via TECLADO (Tab): expande e mostra o contorno.
+   Foco por clique NÃO expande — por isso :focus-visible, não :focus-within. */
 .specs:focus { outline: none; }
 .specs:focus-visible {
   outline: 2px solid var(--acento);
   outline-offset: -2px;
   border-radius: 8px;
+  max-height: 210px;
+  overflow-y: auto;
 }
+
 .specs ul { list-style: none; display: grid; gap: 8px; padding: 10px 0 14px; }
 .specs li {
   display: flex; justify-content: space-between; gap: 12px;
